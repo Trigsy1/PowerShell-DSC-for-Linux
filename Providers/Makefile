@@ -76,6 +76,7 @@ PROVIDERS+=nxAvailableUpdates
 PROVIDERS+=nxOMSKeyMgmt
 PROVIDERS+=nxFileInventory
 PROVIDERS+=nxOMSAgentNPMConfig
+PROVIDERS+=nxOMSAuditdPlugin
 else
 PROVIDERS:=nxFile
 PROVIDERS+=nxScript
