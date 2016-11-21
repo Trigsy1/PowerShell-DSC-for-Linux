@@ -55,18 +55,21 @@ if os.system('grep -q "omsagent:" /etc/passwd'):
     os.system('useradd -r -c "OMS agent" -d /var/opt/microsoft/omsagent/run -g omsagent -s /bin/bash omsagent')
 os.system('touch /tmp/omstest_cleanup_user')
 os.system('mkdir -p /tmp/omsconfig/var/opt/microsoft/omsagent/run; mkdir -p /var/opt') 
-os.symlink('/tmp/omsconfig/var/opt/microsoft/', '/var/opt/microsoft')
+#os.symlink('/tmp/omsconfig/var/opt/microsoft/', '/var/opt/microsoft')
 os.system('mkdir -p /etc/opt/')
-os.symlink('/tmp/omsconfig/etc/opt/microsoft/', '/etc/opt/microsoft')
+#os.symlink('/tmp/omsconfig/etc/opt/microsoft/', '/etc/opt/microsoft')
 #os.system('chmod 700 /etc/opt/omi/conf/omsconfig')
 #os.system('chmod a+rx /etc/opt/omi/conf/omsconfig/')
-os.system('chown -R omsagent.omsagent /etc/opt')
-os.system('chown -R omsagent.omsagent /opt/microsoft/omsconfig/Scripts')
+os.system('chown -R omsagent.omsagent /tmp/omsconfig')
+#os.system('chown -R omsagent.omsagent /etc/opt')
+#os.system('chown -R omsagent.omsagent /opt/microsoft/omsconfig/Scripts')
 #os.system('chgrp -R omsagent /etc/opt/omi/conf/omsconfig')
 #os.system('chgrp -R omsagent /opt/microsoft/omsconfig/Scripts')
 os.system('touch /var/opt/microsoft/omsagent/run/.bash_profile')
 os.system('chmod 755 /etc/opt')
-os.system('chown -R omsagent /var/opt/microsoft/omsagent/run')
+os.system('mkdir -p /tmp/omsconfig/var/opt/microsoft/omsconfig')
+os.system('chown -R omsagent /tmp/omsconfig/var/opt')
+#os.system('chown -R omsagent /var/opt/microsoft/omsagent/run')
 #os.system('chgrp -R omsagent /var/opt/microsoft/omsagent/run')
 
 # Setup omsconfig sudoers and add python as passwordless root.
@@ -74,7 +77,6 @@ os.system('echo "omsagent ALL=(ALL) NOPASSWD: `which python` " >> /etc/opt/micro
 os.system('cp /etc/sudoers /etc/sudoers.back')
 os.system('cat /etc/opt/microsoft/omsagent/sysconf/sudoers >> /etc/sudoers')
 os.system('chmod 440 /etc/sudoers')
-
 # Setup python __init__.py.
 os.system('su omsagent -c "/opt/microsoft/omsconfig/Scripts/RegenerateInitFiles.py"')
 
@@ -123,8 +125,8 @@ result = os.system('su -c " python ' + destpath + 'Tests/test_OMS_nxProviders.py
 
 # Cleanup.
 if os.path.exists('/tmp/omstest_cleanup_user'):
-    os.system('userdel omsagent')
-    os.system('userdel jojoma')
+    os.system('userdel omsagent &> /dev/null')
+    os.system('userdel jojoma &> /dev/null')
 if os.path.exists('/tmp/omstest_cleanup_group'):
     os.system('groupdel omsagent')
     os.system('groupdel jojomamas')
