@@ -28,7 +28,6 @@ def opened_w_error(filename, mode="r"):
             yield f, None
         finally:
             f.close()
-
 try:
     import unittest2
 except:
@@ -147,6 +146,7 @@ def deep_compare(obj1, obj2):
         return False
 
     return False
+
 
 sys.path.append('.')
 sys.path.append(os.path.realpath('./Scripts'))
