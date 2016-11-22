@@ -56,10 +56,9 @@ if os.system('grep -q "omsagent:" /etc/passwd'):
 os.system('touch /tmp/omstest_cleanup_user')
 os.system('mkdir -p /tmp/omsconfig/var/opt/microsoft/omsagent/run; mkdir -p /var/opt') 
 #os.symlink('/tmp/omsconfig/var/opt/microsoft/', '/var/opt/microsoft')
-os.system('mkdir -p /etc/opt/')
+#os.system('mkdir -p /etc/opt/')
 #os.symlink('/tmp/omsconfig/etc/opt/microsoft/', '/etc/opt/microsoft')
-#os.system('chmod 700 /etc/opt/omi/conf/omsconfig')
-#os.system('chmod a+rx /etc/opt/omi/conf/omsconfig/')
+os.system('chmod a+wrx /tmp/omsconfig/etc/opt/omi/conf/omsconfig/')
 os.system('chown -R omsagent.omsagent /tmp/omsconfig')
 #os.system('chown -R omsagent.omsagent /etc/opt')
 #os.system('chown -R omsagent.omsagent /opt/microsoft/omsconfig/Scripts')
@@ -87,13 +86,18 @@ os.system('su omsagent -c "/opt/microsoft/omsconfig/Scripts/ImportGPGKey.sh /opt
 #os.system('chgrp -R omsagent /var/opt/microsoft/omsconfig')
 
 # Setup fake syslog/rsyslog oms conf files.
-os.system('touch /var/opt/microsoft/omsconfig/syslog-ng-oms.conf')
-os.system('touch /var/opt/microsoft/omsconfig/rsyslog-oms.conf')
+if not os.path.exists('/etc/opt/omi/conf/omsconfig/syslog-ng-oms.conf'):
+    os.system('touch /etc/opt/omi/conf/omsconfig/syslog-ng-oms.conf')
+if not os.path.exists('/etc/opt/omi/conf/omsconfig/rsyslog-oms.conf'):
+    os.system('touch /etc/opt/omi/conf/omsconfig/rsyslog-oms.conf')
+
 if os.path.exists('/etc/rsyslog.d/'):
-    os.system('cp /etc/opt/microsoft/omsagent/sysconf/rsyslog.conf /etc/rsyslog.d/95-omsagent.conf')
+    os.system('cp /etc/opt/omi/conf/omsconfig/rsyslog-oms.conf /etc/rsyslog.d/95-omsagent.conf')
     os.system('chown omsagent:omsagent /etc/rsyslog.d/95-omsagent.conf')
 
 os.system('chown -R omsagent /var/opt/microsoft/omsconfig')
+os.system('chmod +w  omsagent /etc/opt/omi/conf/omsconfig/*')
+os.system('chown -R omsagent /etc/opt/omi/conf/omsconfig')
 
 # Copy the Tests
 destpath = '/opt/microsoft/omsconfig/Scripts/' + sys.argv[2] + '/Scripts/'

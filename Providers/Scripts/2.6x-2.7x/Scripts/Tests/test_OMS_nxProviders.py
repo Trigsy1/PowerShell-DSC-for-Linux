@@ -595,17 +595,17 @@ OMSSyslog_setup_txt = """
 import os,sys
 if os.path.exists('/etc/rsyslog.d/'):
     if os.path.exists('/etc/rsyslog.d/95-omsagent.conf'):
-        os.system('cp /etc/rsyslog.d/95-omsagent.conf /etc/rsyslog.d/95-omsagent.conf.bak')
-        os.system('cp /etc/opt/omi/conf/omsconfig/rsyslog-oms.conf /etc/opt/omi/conf/omsconfig/rsyslog-oms.conf.bak')
+        os.system('cp -a /etc/rsyslog.d/95-omsagent.conf /etc/rsyslog.d/95-omsagent.conf.bak')
+        os.system('cp -a /etc/opt/omi/conf/omsconfig/rsyslog-oms.conf /etc/opt/omi/conf/omsconfig/rsyslog-oms.conf.bak')
 elif os.path.exists('/etc/rsyslog.conf'):
-    os.system('cp /etc/rsyslog.conf /etc/rsyslog.conf.bak')
-    os.system('cp /etc/opt/omi/conf/omsconfig/rsyslog-oms.conf /etc/opt/omi/conf/omsconfig/rsyslog-oms.conf.bak')
+    os.system('cp -a /etc/rsyslog.conf /etc/rsyslog.conf.bak')
+    os.system('cp -a /etc/opt/omi/conf/omsconfig/rsyslog-oms.conf /etc/opt/omi/conf/omsconfig/rsyslog-oms.conf.bak')
 elif os.path.exists('/etc/syslog.conf'):
-    os.system('cp /etc/syslog.conf /etc/syslog.conf.bak')
-    os.system('cp /etc/opt/omi/conf/omsconfig/sysklog-oms.conf /etc/opt/omi/conf/omsconfig/sysklog-oms.conf.bak')
+    os.system('cp -a /etc/syslog.conf /etc/syslog.conf.bak')
+    os.system('cp -a /etc/opt/omi/conf/omsconfig/sysklog-oms.conf /etc/opt/omi/conf/omsconfig/sysklog-oms.conf.bak')
 elif os.path.exists('/etc/syslog-ng/syslog-ng.conf'):
-    os.system('cp /etc/syslog-ng/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf.bak')
-    os.system('cp /etc/opt/omi/conf/omsconfig/syslog-ng-oms.conf /etc/opt/omi/conf/omsconfig/syslog-ng-oms.conf.bak')            
+    os.system('cp -a /etc/syslog-ng/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf.bak')
+    os.system('cp -a /etc/opt/omi/conf/omsconfig/syslog-ng-oms.conf /etc/opt/omi/conf/omsconfig/syslog-ng-oms.conf.bak')            
 """
 OMSSyslog_teardown_txt = """
 import os,sys
@@ -657,12 +657,12 @@ class nxOMSSyslogTestCases(unittest2.TestCase):
         self.assertTrue(nxOMSSyslog.Set_Marshall(**d) == [0],'Set('+repr(d)+') should return == [0]') 
 
     def testTestSetOMSSyslog_add(self):
+        import pdb; pdb.set_trace()
         d={'SyslogSource': [{'Facility': 'kern','Severities': ['emerg','crit','warning']},{'Facility': 'auth','Severities': ['emerg','crit','warning']}] }
         self.assertTrue(nxOMSSyslog.Set_Marshall(**d) == [0],'Set_Marshall('+repr(d)+') should return == [0]') 
         self.assertTrue(nxOMSSyslog.Test_Marshall(**d) == [0],'Test_Marshall('+repr(d)+') should return == [0]') 
 
     def testGetOMSSyslog_add(self):
-        import pdb; pdb.set_trace()
         d={'SyslogSource': [{'Facility': 'auth','Severities': ['crit','emerg','warning']},{'Facility': 'kern','Severities': ['crit','emerg','warning']}] }
         e=copy.deepcopy(d)
         t=copy.deepcopy(d)
@@ -688,25 +688,9 @@ class nxOMSSyslogTestCases(unittest2.TestCase):
         self.assertTrue(check_values(g, m)  ==  True, \
         'Get('+repr(g)+' should return ==['+repr(m)+']')
 
-    def testTestSetOMSSyslog_addSysklogd(self):
-        sysklogd_exists = False
-        if not os.path.exists('/etc/syslog.conf'):
-            os.system('touch /etc/syslog.conf')
-        else:
-            sysklogd_exists = True
-        d={'SyslogSource': [{'Facility': 'kern','Severities': ['emerg','crit','warning']},{'Facility': 'auth','Severities': ['emerg','crit','warning']}] }
-        self.assertTrue(nxOMSSyslog.Set_Marshall(**d) == [0],'Set_Marshall('+repr(d)+') should return == [0]') 
-        self.assertTrue(nxOMSSyslog.Test_Marshall(**d) == [0],'Test_Marshall('+repr(d)+') should return == [0]') 
-        g=nxOMSSyslog.Get_Marshall(**d)
-        print 'GET '+ repr(g) 
-        self.assertTrue(g[0] == 0 and g[1]["SyslogSource"].value == [], \
-       'Get('+repr(g)+' should return g[0] == 0 and g[1]["SyslogSource"].value == []')
-        if sysklogd_exists == False:
-            os.system('rm /etc/syslog.conf')
-
 nxOMSAgent_setup_txt = """
 import os
-os.system('cp /etc/opt/microsoft/omsagent/conf/omsagent.conf /etc/opt/microsoft/omsagent/conf/omsagent.conf.bak')
+os.system('cp -a /etc/opt/microsoft/omsagent/conf/omsagent.conf /etc/opt/microsoft/omsagent/conf/omsagent.conf.bak')
 """
 nxOMSAgent_teardown_txt = """
 import os
@@ -997,21 +981,21 @@ cls.keymgmt = {'KeyContents': key_txt, \
 cls.conf_dir = '/etc/opt/omi/conf/omsconfig'
 if not os.path.exists(cls.conf_dir):
     os.system('mkdir -p ' + cls.conf_dir + ' 2>&1 >/dev/null')
-os.system('cp ' + nxOMSKeyMgmt.signature_keyring_path + ' ' + \
+os.system('cp -a ' + nxOMSKeyMgmt.signature_keyring_path + ' ' + \
           nxOMSKeyMgmt.signature_keyring_path +  '.bak 2>&1 >/dev/null')
-os.system('cp ' + nxOMSKeyMgmt.dsc_keyring_path + ' ' + \
+os.system('cp -a ' + nxOMSKeyMgmt.dsc_keyring_path + ' ' + \
           nxOMSKeyMgmt.dsc_keyring_path +  '.bak 2>&1 >/dev/null')
 """
 nxOMSKeyMgmt_cls_teardown_txt = """import os
-os.system('cp ' + nxOMSKeyMgmt.signature_keyring_path + '.bak ' + \
+os.system('cp -a ' + nxOMSKeyMgmt.signature_keyring_path + '.bak ' + \
 nxOMSKeyMgmt.signature_keyring_path + '2>&1 >/dev/null')
-os.system('cp ' + nxOMSKeyMgmt.dsc_keyring_path + '.bak ' + \
+os.system('cp -a ' + nxOMSKeyMgmt.dsc_keyring_path + '.bak ' + \
 nxOMSKeyMgmt.dsc_keyring_path +  ' 2>&1 >/dev/null')
 """
 nxOMSKeyMgmt_setup_txt = """import os
-os.system('cp ./Scripts/Tests/test_mofs/keymgmtring.gpg ' + \
+os.system('cp -a ./Scripts/Tests/test_mofs/keymgmtring.gpg ' + \
 nxOMSKeyMgmt.signature_keyring_path +  ' 2>&1 >/dev/null')
-os.system('cp ./Scripts/Tests/test_mofs/keyring.gpg ' + \
+os.system('cp -a ./Scripts/Tests/test_mofs/keyring.gpg ' + \
 nxOMSKeyMgmt.dsc_keyring_path +  ' 2>&1 >/dev/null')
 """
 
@@ -1828,4 +1812,4 @@ if __name__ == '__main__':
     s9=unittest2.TestLoader().loadTestsFromTestCase(nxFileInventoryTestCases)
 #    s10=unittest2.TestLoader().loadTestsFromTestCase(nxAvailableUpdatesTestCases)
     alltests = unittest2.TestSuite([s1,s2,s3,s4,s5,s6,s7,s8])
-    unittest2.TextTestRunner(stream=sys.stdout,verbosity=3).run(s5)
+    unittest2.TextTestRunner(stream=sys.stdout,verbosity=3).run(s6)
